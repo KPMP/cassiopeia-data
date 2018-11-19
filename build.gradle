@@ -33,6 +33,7 @@ processResources {
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-mongodb")
+    compile("org.springframework.boot:spring-boot-starter-web")
 }
 
 springBoot {
