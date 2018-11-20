@@ -34,6 +34,7 @@ processResources {
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-mongodb")
     compile("org.springframework.boot:spring-boot-starter-web")
+	testCompile 'org.mockito:mockito-core'
 }
 
 springBoot {
