@@ -1,4 +1,6 @@
 *.iml
+.classpath
+.settings
 .*_history
 .project
 .idea
