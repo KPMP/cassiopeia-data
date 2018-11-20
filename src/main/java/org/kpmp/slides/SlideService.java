@@ -1,13 +1,26 @@
 package org.kpmp.slides;
 
+import java.util.Collections;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SlideService  {
+public class SlideService {
+
+	private PatientSlidesRepository patientRepo;
+
+	@Autowired
+	public SlideService(PatientSlidesRepository patientRepo) {
+		this.patientRepo = patientRepo;
+	}
 
 	public List<Slide> getSlidesForPatient(String kpmpId) {
-		return null;
+		PatientSlides patient = patientRepo.findByKpmpId(kpmpId);
+		if (patient != null) {
+			return patient.getSlides();
+		}
+		return Collections.emptyList();
 	}
 }
