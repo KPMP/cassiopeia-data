@@ -22,9 +22,10 @@ public class SlideTest {
 
 	@Test
 	public void testSetStain() {
-		slide.setStain("stain");
+		Stain stain = new Stain();
+		slide.setStain(stain);
 
-		assertEquals("stain", slide.getStain());
+		assertEquals(stain, slide.getStain());
 	}
 
 	@Test
