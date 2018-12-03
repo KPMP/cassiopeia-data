@@ -2,6 +2,7 @@ package org.kpmp.slides;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "patients")
 public class Slide {
@@ -9,13 +10,15 @@ public class Slide {
 	@Id
 	private String id;
 	private String slideName;
-	private String stain;
 
-	public String getStain() {
+	@Field("stain")
+	private Stain stain;
+
+	public Stain getStain() {
 		return stain;
 	}
 
-	public void setStain(String stain) {
+	public void setStain(Stain stain) {
 		this.stain = stain;
 	}
 
