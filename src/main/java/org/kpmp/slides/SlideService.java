@@ -1,5 +1,6 @@
 package org.kpmp.slides;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,10 +17,17 @@ public class SlideService {
 		this.participantRepo = participantRepo;
 	}
 
-	public List<Slide> getSlidesForPaarticipant(String kpmpId) {
+	public List<Slide> getSlidesForParticipant(String kpmpId) {
 		Participant patient = participantRepo.findByKpmpId(kpmpId);
 		if (patient != null) {
-			return patient.getSlides();
+			List<Slide> slides = patient.getSlides();
+			List<Slide> slidesToReturn = new ArrayList<Slide>();
+			for (Slide slide : slides) {
+				if (!(slide.getStain().getType().equals("tol") || slide.getStain().getType().equals("frz"))) {
+					slidesToReturn.add(slide);
+				}
+			}
+			return slidesToReturn;
 		}
 		return Collections.emptyList();
 	}

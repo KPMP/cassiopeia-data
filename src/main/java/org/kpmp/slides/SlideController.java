@@ -27,7 +27,7 @@ public class SlideController {
 	@RequestMapping(value = "/v1/slides/{kpmpId}", method = RequestMethod.GET)
 	public @ResponseBody List<Slide> getSlidesForParticipant(@PathVariable String kpmpId, HttpServletRequest request) {
 		logger.logInfoMessage(this.getClass(), "Getting slides for participant " + kpmpId, request);
-		return slideService.getSlidesForPaarticipant(kpmpId);
+		return slideService.getSlidesForParticipant(kpmpId);
 	}
 
 	@RequestMapping(value = "/v1/slides", method = RequestMethod.GET)

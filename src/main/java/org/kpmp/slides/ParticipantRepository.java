@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 public interface ParticipantRepository extends MongoRepository<Participant, String> {
 
 	public Participant findByKpmpId(String kpmpId);
+
 	public List<Participant> findByOrderByKpmpIdAsc();
 
 }
