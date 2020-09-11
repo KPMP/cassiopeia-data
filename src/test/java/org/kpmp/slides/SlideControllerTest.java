@@ -39,7 +39,7 @@ public class SlideControllerTest {
 	@Test
 	public void testGetSlidesForPatient() {
 		List<Slide> slides = Arrays.asList(mock(Slide.class));
-		when(slideService.getSlidesForPaarticipant("444")).thenReturn(slides);
+		when(slideService.getSlidesForParticipant("444")).thenReturn(slides);
 
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		List<Slide> result = controller.getSlidesForParticipant("444", request);

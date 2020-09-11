@@ -34,20 +34,48 @@ public class SlideServiceTest {
 	@Test
 	public void testGetSlidesForPatient() {
 		Participant patient = mock(Participant.class);
-		List<Slide> slides = Arrays.asList(mock(Slide.class));
+		Slide slide = mock(Slide.class);
+		Stain stain = mock(Stain.class);
+		when(stain.getType()).thenReturn("he");
+		when(slide.getStain()).thenReturn(stain);
+		List<Slide> slides = Arrays.asList(slide);
 		when(patient.getSlides()).thenReturn(slides);
 		when(participantRepository.findByKpmpId("345")).thenReturn(patient);
 
-		List<Slide> result = service.getSlidesForPaarticipant("345");
+		List<Slide> result = service.getSlidesForParticipant("345");
 
 		assertEquals(slides, result);
+	}
+
+	@Test
+	public void testGetSlidesForPatient_excludesTOLandFRZ() {
+		Participant patient = mock(Participant.class);
+		Slide slide1 = mock(Slide.class);
+		Slide slide2 = mock(Slide.class);
+		Slide slide3 = mock(Slide.class);
+		Stain stain1 = mock(Stain.class);
+		Stain stain2 = mock(Stain.class);
+		Stain stain3 = mock(Stain.class);
+		when(stain1.getType()).thenReturn("he");
+		when(stain2.getType()).thenReturn("tol");
+		when(stain3.getType()).thenReturn("frz");
+		when(slide1.getStain()).thenReturn(stain1);
+		when(slide2.getStain()).thenReturn(stain2);
+		when(slide3.getStain()).thenReturn(stain3);
+		List<Slide> slides = Arrays.asList(slide1, slide2, slide3);
+		when(patient.getSlides()).thenReturn(slides);
+		when(participantRepository.findByKpmpId("345")).thenReturn(patient);
+
+		List<Slide> result = service.getSlidesForParticipant("345");
+
+		assertEquals(Arrays.asList(slide1), result);
 	}
 
 	@Test
 	public void testGetSlidesForPatient_whenNoSlides() {
 		when(participantRepository.findByKpmpId("345")).thenReturn(null);
 
-		List<Slide> result = service.getSlidesForPaarticipant("345");
+		List<Slide> result = service.getSlidesForParticipant("345");
 
 		assertEquals(Collections.emptyList(), result);
 	}
