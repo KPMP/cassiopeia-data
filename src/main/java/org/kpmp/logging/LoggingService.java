@@ -47,6 +47,11 @@ public class LoggingService {
 		log.error(LOG_MESSAGE_FORMAT, getUserString(user), uri, message);
 	}
 
+	public void logErrorMessage(Class clazz, ShibbolethUser user, String uri, HttpServletRequest request) {
+		Logger log = LoggerFactory.getLogger(clazz);
+		log.error(LOG_MESSAGE_FORMAT, getUserString(user), uri, request.getRequestURI());
+	}
+
 	@SuppressWarnings("rawtypes")
 	public void logWarnMessage(Class clazz, String message, HttpServletRequest request) {
 		Logger log = LoggerFactory.getLogger(clazz);
