@@ -19,7 +19,7 @@ public class ShibbolethUserService {
 
 		ShibbolethUser user = new ShibbolethUser();
 
-		if(request == null) {
+		if (request == null) {
 			return null;
 		}
 
@@ -33,12 +33,15 @@ public class ShibbolethUserService {
 		String lastName = encoder.convertFromLatin1(value);
 		value = handleNull(request.getHeader("eppn"));
 		String shibId = encoder.convertFromLatin1(value);
+		value = handleNull(request.getHeader("studyId"));
+		String kpmpId = encoder.convertFromLatin1(value);
 
 		user.setDisplayName(displayName);
 		user.setLastName(lastName);
 		user.setFirstName(firstName);
 		user.setEmail(email);
 		user.setShibId(shibId);
+		user.setKpmpId(kpmpId);
 
 		return user;
 

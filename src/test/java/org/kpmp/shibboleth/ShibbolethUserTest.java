@@ -45,14 +45,21 @@ public class ShibbolethUserTest {
 	}
 
 	@Test
+	public void testSetKpmpId() throws Exception {
+		testUser.setKpmpId("KPMP-123");
+		assertEquals("KPMP-123", testUser.getKpmpId());
+	}
+
+	@Test
 	public void testToString() {
 		testUser.setDisplayName("Space Oddity");
 		testUser.setFirstName("Ziggy");
 		testUser.setLastName("Stardust");
 		testUser.setEmail("ziggy@mars.com");
 		testUser.setShibId("ziggy@mars.com");
+		testUser.setKpmpId("KPMP-123");
 		assertEquals("firstName: Ziggy" + ", lastName: Stardust" + ", displayName: Space Oddity"
-				+ ", email: ziggy@mars.com, shibId: ziggy@mars.com", testUser.toString());
+				+ ", email: ziggy@mars.com, shibId: ziggy@mars.com, kpmpId: KPMP-123", testUser.toString());
 	}
 
 }

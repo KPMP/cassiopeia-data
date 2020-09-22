@@ -10,6 +10,7 @@ public class ShibbolethUser {
 	private String displayName;
 	private String email;
 	private String shibId;
+	private String kpmpId;
 
 	public String getFirstName() {
 		return firstName;
@@ -46,7 +47,7 @@ public class ShibbolethUser {
 	@Override
 	public String toString() {
 		return "firstName: " + firstName + ", lastName: " + lastName + ", displayName: " + displayName + ", email: "
-				+ email + ", shibId: " + shibId;
+				+ email + ", shibId: " + shibId + ", kpmpId: " + kpmpId;
 	}
 
 	public String getShibId() {
@@ -55,5 +56,13 @@ public class ShibbolethUser {
 
 	public void setShibId(String shibId) {
 		this.shibId = shibId;
+	}
+
+	public String getKpmpId() {
+		return kpmpId;
+	}
+
+	public void setKpmpId(String kpmpId) {
+		this.kpmpId = kpmpId;
 	}
 }
