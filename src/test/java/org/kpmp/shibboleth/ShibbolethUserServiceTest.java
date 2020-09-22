@@ -39,11 +39,13 @@ public class ShibbolethUserServiceTest {
 		when(request.getHeader("sn")).thenReturn("Cash");
 		when(request.getHeader("displayname")).thenReturn("Johnny Cash");
 		when(request.getHeader("eppn")).thenReturn("shibId");
+		when(request.getHeader("studyId")).thenReturn("kpmp-123");
 		when(utf8Encoder.convertFromLatin1("Johnny")).thenReturn("Johnny");
 		when(utf8Encoder.convertFromLatin1("Cash")).thenReturn("Cash");
 		when(utf8Encoder.convertFromLatin1("Johnny Cash")).thenReturn("Johnny Cash");
 		when(utf8Encoder.convertFromLatin1("maninblack@jcash.com")).thenReturn("maninblack@jcash.com");
 		when(utf8Encoder.convertFromLatin1("shibId")).thenReturn("shibId");
+		when(utf8Encoder.convertFromLatin1("kpmp-123")).thenReturn("kpmp-123");
 
 		ShibbolethUser user = shibbolethUserService.getUser(request);
 
@@ -52,6 +54,7 @@ public class ShibbolethUserServiceTest {
 		assertEquals("Cash", user.getLastName());
 		assertEquals("Johnny", user.getFirstName());
 		assertEquals("shibId", user.getShibId());
+		assertEquals("kpmp-123", user.getKpmpId());
 
 	}
 
