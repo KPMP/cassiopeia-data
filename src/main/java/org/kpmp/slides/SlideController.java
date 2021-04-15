@@ -1,5 +1,6 @@
 package org.kpmp.slides;
 
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,6 +45,16 @@ public class SlideController {
 	@RequestMapping(value = "/v1/slides", method = RequestMethod.GET)
 	public @ResponseBody List<Slide> getSlidesForParticipant(HttpServletRequest request) {
 		ShibbolethUser user = shibbolethUserService.getUser(request);
+		logger.logInfoMessage(this.getClass(), user, request.getRequestURI(), "Getting slides for user: " + user.toString());
+		Enumeration<String> headerNames = request.getHeaderNames();
+		StringBuilder headerInfo = new StringBuilder();
+		while(headerNames.hasMoreElements()) {
+			String headerName = headerNames.nextElement();
+			headerInfo.append(headerName + " = " + request.getHeader(headerName) + "\n");
+		}
+
+		logger.logInfoMessage(this.getClass(), headerInfo.toString(), request);
+
 		return slideService.getSlidesForParticipant(user.getKpmpId());
 	}
 
