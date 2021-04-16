@@ -1,7 +1,10 @@
 package org.kpmp.shibboleth;
 
+import java.util.Enumeration;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.kpmp.logging.LoggingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

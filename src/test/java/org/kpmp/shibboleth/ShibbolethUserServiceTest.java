@@ -5,12 +5,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.Collections;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kpmp.logging.LoggingService;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -34,6 +37,7 @@ public class ShibbolethUserServiceTest {
 	@Test
 	public void testGetUser() throws UnsupportedEncodingException {
 		HttpServletRequest request = mock(HttpServletRequest.class);
+		when(request.getHeaderNames()).thenReturn(Collections.enumeration(Collections.emptyList()));
 		when(request.getHeader("mail")).thenReturn("maninblack@jcash.com");
 		when(request.getHeader("givenname")).thenReturn("Johnny");
 		when(request.getHeader("sn")).thenReturn("Cash");

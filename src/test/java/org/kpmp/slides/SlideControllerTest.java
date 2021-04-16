@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -65,6 +66,8 @@ public class SlideControllerTest {
 	@Test
 	public void testGetSlidesForParticipant() throws Exception {
 		HttpServletRequest request = mock(HttpServletRequest.class);
+		when(request.getHeaderNames()).thenReturn(Collections.enumeration(Collections.emptyList()));
+		when(request.getRequestURI()).thenReturn("requestURI");
 		ShibbolethUser user = mock(ShibbolethUser.class);
 		when(user.getKpmpId()).thenReturn("123");
 		when(shibbolethUserService.getUser(request)).thenReturn(user);
