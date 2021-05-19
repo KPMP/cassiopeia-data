@@ -48,21 +48,25 @@ public class SlideServiceTest {
 	}
 
 	@Test
-	public void testGetSlidesForPatient_excludesTOLandFRZ() {
+	public void testGetSlidesForPatient_excludesTOLandFRZandIHC() {
 		Participant patient = mock(Participant.class);
 		Slide slide1 = mock(Slide.class);
 		Slide slide2 = mock(Slide.class);
 		Slide slide3 = mock(Slide.class);
+		Slide slide4 = mock(Slide.class);
 		Stain stain1 = mock(Stain.class);
 		Stain stain2 = mock(Stain.class);
 		Stain stain3 = mock(Stain.class);
+		Stain stain4 = mock(Stain.class);
 		when(stain1.getType()).thenReturn("he");
 		when(stain2.getType()).thenReturn("tol");
 		when(stain3.getType()).thenReturn("frz");
+		when(stain4.getType()).thenReturn("ihc");
 		when(slide1.getStain()).thenReturn(stain1);
 		when(slide2.getStain()).thenReturn(stain2);
 		when(slide3.getStain()).thenReturn(stain3);
-		List<Slide> slides = Arrays.asList(slide1, slide2, slide3);
+		when(slide4.getStain()).thenReturn(stain4);
+		List<Slide> slides = Arrays.asList(slide1, slide2, slide3, slide4);
 		when(patient.getSlides()).thenReturn(slides);
 		when(participantRepository.findByKpmpId("345")).thenReturn(patient);
 
