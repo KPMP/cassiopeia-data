@@ -23,7 +23,8 @@ public class SlideService {
 			List<Slide> slides = patient.getSlides();
 			List<Slide> slidesToReturn = new ArrayList<Slide>();
 			for (Slide slide : slides) {
-				if (!(slide.getStain().getType().equals("tol") || slide.getStain().getType().equals("frz"))) {
+				if (!(slide.getStain().getType().equals("tol") || slide.getStain().getType().equals("frz")
+						|| slide.getStain().getType().equals("ihc"))) {
 					slidesToReturn.add(slide);
 				}
 			}
