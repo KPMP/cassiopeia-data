@@ -20,9 +20,9 @@ apply plugin: 'com.palantir.docker'
 
 group = 'kingstonduo'
 
-bootJar {
-    archiveBaseName = 'cassiopeia-data'
-    archiveVersion =  '1.5'
+jar {
+    baseName = 'cassiopeia-data'
+    version =  '1.5'
 }
 
 repositories {
@@ -72,7 +72,7 @@ def getTagInfo() {
       } catch (e) {
         }
         if (gitBranch  == "develop" || gitBranch == "master"){
-          return "${bootJar.archiveVersion}"
+          return "${jar.version}"
         }else{
           return gitBranch
         }
@@ -81,7 +81,7 @@ def getTagInfo() {
 }
 
 docker {
-    name "${project.group}/${bootJar.archiveBaseName}:" + getTagInfo()
+    name "${project.group}/${jar.baseName}:" + getTagInfo()
     copySpec.from(tasks.unpack.outputs).into("dependency")
     buildArgs(['DEPENDENCY': "dependency"])
 }
