@@ -11,6 +11,8 @@ plugins {
     id 'com.palantir.docker' version '0.22.1'
 }
 
+group = 'kingstonduo'
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
@@ -18,11 +20,9 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.palantir.docker'
 
-group = 'kingstonduo'
-
-bootJar {
-    archiveBaseName = 'cassiopeia-data'
-    archiveVersion =  '1.5'
+jar {
+    baseName = 'cassiopeia-data'
+    version =  '1.5'
 }
 
 repositories {
@@ -71,12 +71,17 @@ def getTagInfo() {
         }
       } catch (e) {
         }
+        if (gitBranch  == "develop" || gitBranch == "master"){
+          return "${jar.version}"
+        }else{
+          return gitBranch
+        }
         return gitBranch
     }
 }
 
 docker {
-    name "${project.group}/${bootJar.baseName}:" + getTagInfo()
+    name "kingstonduo/cassiopeia-data:" + getTagInfo()
     copySpec.from(tasks.unpack.outputs).into("dependency")
     buildArgs(['DEPENDENCY': "dependency"])
 }
