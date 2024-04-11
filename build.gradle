@@ -11,6 +11,8 @@ plugins {
     id 'com.palantir.docker' version '0.22.1'
 }
 
+group = 'kingstonduo'
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
@@ -18,11 +20,9 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.palantir.docker'
 
-group = 'kingstonduo'
-
-bootJar {
-    archiveBaseName = 'cassiopeia-data'
-    archiveVersion =  '1.2'
+jar {
+    baseName = 'cassiopeia-data'
+    version =  '1.5'
 }
 
 repositories {
@@ -57,16 +57,31 @@ task unpack(type: Copy) {
 }
 
 def getTagInfo() {
-  if (project.hasProperty('tag')) {
-    def tagValue = project.property('tag')
-    return tagValue
-  } else {
-      return "latest"
+    if (project.hasProperty('tag')) {
+        def tagValue = project.property('tag')
+        return tagValue
+    } else {
+        def gitBranch = "Unknown branch"
+      try {
+        def workingDir = new File("${project.projectDir}")
+        def result = 'git rev-parse --abbrev-ref HEAD'.execute(null, workingDir)
+        result.waitFor()
+        if (result.exitValue() == 0) {
+            gitBranch = result.text.trim()
+        }
+      } catch (e) {
+        }
+        if (gitBranch  == "develop" || gitBranch == "master"){
+          return "${jar.version}"
+        }else{
+          return gitBranch
+        }
+        return gitBranch
     }
 }
 
 docker {
-    name "${project.group}/${jar.baseName}:" + getTagInfo()
+    name "kingstonduo/cassiopeia-data:" + getTagInfo()
     copySpec.from(tasks.unpack.outputs).into("dependency")
     buildArgs(['DEPENDENCY': "dependency"])
 }
