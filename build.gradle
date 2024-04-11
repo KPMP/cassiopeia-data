@@ -71,12 +71,17 @@ def getTagInfo() {
         }
       } catch (e) {
         }
+        if (gitBranch  == "develop" || gitBranch == "master"){
+          return "${bootJar.archiveVersion}"
+        }else{
+          return gitBranch
+        }
         return gitBranch
     }
 }
 
 docker {
-    name "${project.group}/${bootJar.baseName}:" + getTagInfo()
+    name "${project.group}/${bootJar.archiveBaseName}:" + getTagInfo()
     copySpec.from(tasks.unpack.outputs).into("dependency")
     buildArgs(['DEPENDENCY': "dependency"])
 }
