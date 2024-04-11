@@ -81,7 +81,7 @@ def getTagInfo() {
 }
 
 docker {
-    name "${project.group}/${jar.baseName}:" + getTagInfo()
+    name "kingstonduo/cassiopeia-data:" + getTagInfo()
     copySpec.from(tasks.unpack.outputs).into("dependency")
     buildArgs(['DEPENDENCY': "dependency"])
 }
