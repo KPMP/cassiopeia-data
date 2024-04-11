@@ -11,14 +11,14 @@ plugins {
     id 'com.palantir.docker' version '0.22.1'
 }
 
+group = 'kingstonduo'
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.palantir.docker'
-
-group = 'kingstonduo'
 
 jar {
     baseName = 'cassiopeia-data'
