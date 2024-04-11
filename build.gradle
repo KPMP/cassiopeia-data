@@ -22,7 +22,7 @@ group = 'kingstonduo'
 
 bootJar {
     archiveBaseName = 'cassiopeia-data'
-    archiveVersion =  '1.2'
+    archiveVersion =  '1.5'
 }
 
 repositories {
@@ -76,7 +76,7 @@ def getTagInfo() {
 }
 
 docker {
-    name "${project.group}/${jar.baseName}:" + getTagInfo()
+    name "${project.group}/${bootJar.baseName}:" + getTagInfo()
     copySpec.from(tasks.unpack.outputs).into("dependency")
     buildArgs(['DEPENDENCY': "dependency"])
 }
