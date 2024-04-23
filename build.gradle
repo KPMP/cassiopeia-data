@@ -80,7 +80,7 @@ def getCurrentGitBranch() {
 }
 
 docker {
-    name "${project.group}/cassiopeia-data:" + getCurrentGitBranch()
+    name "kingstonduo/cassiopeia-data:" + getCurrentGitBranch()
     copySpec.from(tasks.unpack.outputs).into("dependency")
     buildArgs(['DEPENDENCY': "dependency"])
 }
