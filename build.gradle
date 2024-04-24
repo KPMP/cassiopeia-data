@@ -72,7 +72,7 @@ def getCurrentGitBranch() {
       } catch (e) {
         }
         if (gitBranch == "develop" || gitBranch == "master"){
-          return project.version
+          return jar.version
         }else{
           return gitBranch
         }
