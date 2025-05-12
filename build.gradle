@@ -56,12 +56,12 @@ task unpack(type: Copy) {
     into("build/dependency")
 }
 
-def getTagInfo() {
-    if (project.hasProperty('tag')) {
-        def tagValue = project.property('tag')
-        return tagValue
-    } else {
-        def gitBranch = "Unknown branch"
+def getCurrentGitBranch() {
+  if (project.hasProperty('tag')) {
+    def tagValue = project.property('tag')
+    return tagValue
+  } else {
+      def gitBranch = "Unknown branch"
       try {
         def workingDir = new File("${project.projectDir}")
         def result = 'git rev-parse --abbrev-ref HEAD'.execute(null, workingDir)
@@ -71,17 +71,16 @@ def getTagInfo() {
         }
       } catch (e) {
         }
-        if (gitBranch  == "develop" || gitBranch == "master"){
-          return "${jar.version}"
+        if (gitBranch == "develop" || gitBranch == "master"){
+          return jar.version
         }else{
           return gitBranch
         }
-        return gitBranch
     }
 }
 
 docker {
-    name "kingstonduo/cassiopeia-data:" + getTagInfo()
+    name "kingstonduo/cassiopeia-data:" + getCurrentGitBranch()
     copySpec.from(tasks.unpack.outputs).into("dependency")
     buildArgs(['DEPENDENCY': "dependency"])
 }
