@@ -9,11 +9,11 @@ plugins {
 group = 'kingstonduo'
 
 archivesBaseName = 'cassiopeia-data'
-version = '1.6'
+version = '1.7'
 
 jar {
-    archiveBaseName = 'cassiopeia-data'
-    archiveVersion = '1.6'
+    baseName = 'cassiopeia-data'
+    version =  '1.7'
 }
 
 repositories {
