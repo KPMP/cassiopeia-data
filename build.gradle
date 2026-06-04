@@ -7,10 +7,7 @@ plugins {
 }
 
 group = 'kingstonduo'
-
-archivesBaseName = 'cassiopeia-data'
 version = '1.7'
-baseName = 'cassiopeia-data'
 
 repositories {
     mavenCentral()
@@ -19,16 +16,6 @@ repositories {
 sourceCompatibility = 21
 targetCompatibility = 21
 
-processResources {
-    filesMatching('application.properties') {
-        expand(
-            jar: [
-                baseName: archivesBaseName,
-                version: version
-            ]
-        )
-    }
-}
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
