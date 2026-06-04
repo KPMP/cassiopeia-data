@@ -71,3 +71,6 @@ bootBuildImage {
     imageName = "kingstonduo/cassiopeia-data:" + getCurrentGitBranch()
     createdDate = "now"
 }
+
+// Docker image building is now handled by Spring Boot's bootBuildImage task
+// Usage: ./gradlew bootBuildImage
