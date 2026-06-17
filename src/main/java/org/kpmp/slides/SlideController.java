@@ -42,7 +42,7 @@ public class SlideController {
 		return slideService.getAllParticipants();
 	}
 
-	@RequestMapping(value = "/v1/slides", method = RequestMethod.GET)
+	@RequestMapping(value = {"/v1/slides", "/v1/slides/"}, method = RequestMethod.GET)
 	public @ResponseBody List<Slide> getSlidesForParticipant(HttpServletRequest request) {
 		ShibbolethUser user = shibbolethUserService.getUser(request);
 		logger.logInfoMessage(this.getClass(), user, request.getRequestURI(), "Getting slides for user: " + user.toString());
