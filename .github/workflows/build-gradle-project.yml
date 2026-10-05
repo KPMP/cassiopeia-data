@@ -1,12 +1,154 @@
 name: Build cassiopeia-data docker image
 
-on: 
+on:
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: 'Version bump type'
+        required: true
+        default: 'minor'
+        type: choice
+        options:
+          - minor
+          - major
+  create:
+    branches: [develop]
   push:
+    branches: [develop]
+  pull_request:
+    branches: [develop, master]
+    types: [opened, synchronize, reopened, closed]
 
 jobs:
-  build-gradle-project:
+  bump-version:
+    if: ${{ (github.event_name == 'create' && github.event.ref == 'develop' && github.event.ref_type == 'branch') || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     env:
-      IMAGE_TAG: 1.7
+      BUMP_TYPE: ${{ github.event.inputs.bump_type || 'minor' }}
+    steps:
+      - name: Checkout develop
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+          fetch-depth: 0
+
+      - name: Create version bump branch
+        run: |
+          BRANCH_NAME="chore/version-bump-${GITHUB_RUN_ID}"
+          git checkout -b "$BRANCH_NAME"
+          echo "BRANCH_NAME=$BRANCH_NAME" >> "$GITHUB_ENV"
+
+      - name: Read and bump image version
+        run: |
+          current_version=$(sed -nE "s/^version = '([0-9]+\.[0-9]+)'$/\1/p" build.gradle | head -n 1)
+          echo "Current build.gradle version: $current_version"
+
+          if [[ ! "$current_version" =~ ^[0-9]+\.[0-9]+$ ]]; then
+            echo "Expected build.gradle version in major.minor format; found '$current_version'." >&2
+            exit 1
+          fi
+
+          IFS=. read -r major minor <<< "$current_version"
+          if [[ "$BUMP_TYPE" == "major" ]]; then
+            next_version="$((major + 1)).0"
+          elif [[ "$BUMP_TYPE" == "minor" ]]; then
+            next_version="$major.$((minor + 1))"
+          else
+            echo "Unsupported bump type: $BUMP_TYPE" >&2
+            exit 1
+          fi
+
+          echo "Bump type: $BUMP_TYPE"
+          echo "Next image version: $next_version"
+          sed -i -E "s/^version = '[0-9]+\.[0-9]+'$/version = '$next_version'/" build.gradle
+          sed -i -E "s/^      IMAGE_TAG: '[0-9]+\.[0-9]+'$/      IMAGE_TAG: '$next_version'/" .github/workflows/build-gradle-project.yml
+          sed -i -E "s/^      IMAGE_TAG: '[0-9]+\.[0-9]+'$/      IMAGE_TAG: '$next_version'/" .github/workflows/build-gradle-project.yml
+
+      - name: Commit version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- build.gradle .github/workflows/build-gradle-project.yml; then
+            echo "VERSION_BUMP_CREATED=false" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          git add build.gradle .github/workflows/build-gradle-project.yml
+          git commit -m "Bump image version for develop (${BUMP_TYPE})"
+          git push origin "$BRANCH_NAME"
+          echo "VERSION_BUMP_CREATED=true" >> "$GITHUB_ENV"
+
+      - name: Create pull request
+        if: ${{ env.VERSION_BUMP_CREATED == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --base develop \
+            --head "$BRANCH_NAME" \
+            --title "Bump image version for develop (${BUMP_TYPE})" \
+            --body "This PR bumps the image version using the ${BUMP_TYPE} increment."
+
+  bump-image-version:
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.action == 'closed' &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'master' &&
+      github.event.pull_request.head.ref == 'develop'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - name: Read and bump image version
+        id: version
+        env:
+          BUMP_TYPE: ${{ contains(github.event.pull_request.labels.*.name, 'major') && 'major' || 'minor' }}
+        run: |
+          current_version=$(sed -nE "s/^version = '([0-9]+\.[0-9]+)'$/\1/p" build.gradle | head -n 1)
+          echo "Current build.gradle version: $current_version"
+
+          if [[ ! "$current_version" =~ ^[0-9]+\.[0-9]+$ ]]; then
+            echo "Expected build.gradle version in major.minor format; found '$current_version'." >&2
+            exit 1
+          fi
+
+          IFS=. read -r major minor <<< "$current_version"
+          if [[ "$BUMP_TYPE" == "major" ]]; then
+            next_version="$((major + 1)).0"
+          elif [[ "$BUMP_TYPE" == "minor" ]]; then
+            next_version="$major.$((minor + 1))"
+          else
+            echo "Unsupported bump type: $BUMP_TYPE" >&2
+            exit 1
+          fi
+
+          echo "Bump type: $BUMP_TYPE"
+          echo "Next image version: $next_version"
+          echo "next_version=$next_version" >> "$GITHUB_OUTPUT"
+          sed -i -E "s/^version = '[0-9]+\.[0-9]+'$/version = '$next_version'/" build.gradle
+          sed -i -E "s/^      IMAGE_TAG: [0-9]+\.[0-9]+$/      IMAGE_TAG: $next_version/" .github/workflows/build-gradle-project.yml
+          sed -i -E "s/^      IMAGE_TAG: [0-9]+\.[0-9]+$/      IMAGE_TAG: $next_version/" .github/workflows/build-gradle-project.yml
+
+      - name: Commit and push image version
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add build.gradle .github/workflows/build-gradle-project.yml
+          git commit -m "chore: bump image version to ${{ steps.version.outputs.next_version }}"
+          git push origin HEAD:master
+
+  build-gradle-project:
+    if: github.event_name == 'push'
+    env:
+      IMAGE_TAG: '1.7'
     runs-on: ubuntu-latest
     steps:
       - name: Get branch names
@@ -19,6 +161,15 @@ jobs:
           echo "Running on branch: ${{ steps.branch-names.outputs.current_branch }}"
       - name: Checkout project sources
         uses: actions/checkout@v3
+      - name: Read image version
+        run: |
+          IMAGE_TAG=$(sed -nE "s/^version = '([0-9]+\.[0-9]+)'$/\1/p" build.gradle | head -n 1)
+          echo "Image version from build.gradle: $IMAGE_TAG"
+          if [[ ! "$IMAGE_TAG" =~ ^[0-9]+\.[0-9]+$ ]]; then
+            echo "Expected build.gradle version in major.minor format; found '$IMAGE_TAG'." >&2
+            exit 1
+          fi
+          echo "IMAGE_TAG=$IMAGE_TAG" >> "$GITHUB_ENV"
       - uses: actions/setup-java@v3
         with:
           java-version: '21'
@@ -36,13 +187,13 @@ jobs:
 
       - name: Run build with Gradle Wrapper
         run: |
-         ./gradlew bootBuildImage
+          ./gradlew bootBuildImage
 
       - name: Push to Docker Hub if branch is develop
         if: steps.branch-names.outputs.current_branch == 'develop'
-        run: | 
-         docker push "kingstonduo/cassiopeia-data:$IMAGE_TAG"
-        
+        run: |
+          docker push "kingstonduo/cassiopeia-data:$IMAGE_TAG"
+
       - name: Push to Docker Hub if branch is not develop
         if: steps.branch-names.outputs.current_branch != 'develop'
         run: |
